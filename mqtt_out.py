@@ -1,8 +1,6 @@
 import random
 import time
 from paho.mqtt import client as mqtt_client
-#import hand_detect as hd
-
 
 broker = 'broker.emqx.io'
 port = 1883
@@ -27,13 +25,13 @@ def connect_mqtt():
 
 
 def publish(client):
-    msg_count = 0
     while True:
         time.sleep(1)
         msg = input('Masukan angka: ')
         result = client.publish(topic, msg)
         # result: [0, 1]
         status = result[0]
+        print(result)
         if status == 0:
             print(f"Send `{msg}` to topic `{topic}`")
         else:
@@ -43,7 +41,6 @@ def publish(client):
 def run():
     client = connect_mqtt()
     client.loop_start()
-    #print(hd.volPer())
     publish(client)
 
 
