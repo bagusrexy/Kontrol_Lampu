@@ -32,7 +32,7 @@ def publish(client):
         # result: [0, 1]
         status = result[0]
         print(result)
-        if status == 0:
+        if status == int:
             print(f"Send `{msg}` to topic `{topic}`")
         else:
             print(f"Failed to send message to topic {topic}")
