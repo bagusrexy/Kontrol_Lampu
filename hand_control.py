@@ -2,18 +2,14 @@ import cv2
 import time
 import numpy as np
 import HandTrackingModule as htm
-import random
-from paho.mqtt import client as mqtt_client
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 
-#setting MQTT
+cred = credentials.Certificate('firebase-sdk.json')
+firebase_admin.initialize_app(cred, {'databaseURL': 'https://controldevice-3703b-default-rtdb.asia-southeast1.firebasedatabase.app/'})
 
-broker = 'broker.emqx.io'
-port = 1883
-topic = "skripsimuro1/ruangan/v1"
-# generate client ID with pub prefix randomly
-client_id = f'python-mqtt-{random.randint(0, 1000)}'
-username = 'emqx'
-password = 'public'
+ref = db.reference('/')
 
 ################################
 wCam, hCam = 640, 480
@@ -31,37 +27,6 @@ volBar = 400
 volPer = 0
 area = 0
 colorVol = (255, 0, 0)
-
-def connect_mqtt():
-    def on_connect(client, userdata, flags, rc):
-        if rc == 0:
-            print("Connected to MQTT Broker!")
-            time.sleep(10)
-        else:
-            print("Failed to connect, return code %d\n", rc)
-
-    client = mqtt_client.Client(client_id)
-    client.username_pw_set(username, password)
-    client.on_connect = on_connect
-    client.connect(broker, port)
-    return client
-
-def publish(client):
-    while True:
-        time.sleep(1)
-        msg = int(volPer)
-        client.publish(topic, msg)
-        if msg >= 0:
-            print(f"Send `{msg}` to topic `{topic}`")
-            break
-        else:
-            print(f"Failed to send message to topic {topic}")
-        break
-
-def run():
-    client = connect_mqtt()
-    client.loop_start()
-    publish(client)
 
 while True:
     success, img = cap.read()
@@ -95,10 +60,13 @@ while True:
             if not fingers[4]:
                 cv2.circle(img, (lineInfo[4], lineInfo[5]), 15, (0, 255, 0), cv2.FILLED)
                 colorVol = (0, 255, 0)
-                run()
+                ref.set({
+                    'Control': {
+                        'nilai': int(volPer)
+                    }
+                })
             else:
                 colorVol = (255, 0, 0)
-
 
     # Drawings
     cv2.rectangle(img, (50, 150), (85, 400), (255, 0, 0), 3)
