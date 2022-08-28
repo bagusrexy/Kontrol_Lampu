@@ -1,7 +1,7 @@
 import random
 import time
 from paho.mqtt import client as mqtt_client
-#import hand_detect as hd
+from hand_control import volPer as crott
 
 
 broker = 'broker.emqx.io'
@@ -27,14 +27,14 @@ def connect_mqtt():
 
 
 def publish(client):
-    msg_count = 0
     while True:
         time.sleep(1)
-        msg = input('Masukan angka: ')
+        msg = int(crott)
         result = client.publish(topic, msg)
         # result: [0, 1]
         status = result[0]
-        if status == 0:
+        print(result)
+        if msg >= 0:
             print(f"Send `{msg}` to topic `{topic}`")
         else:
             print(f"Failed to send message to topic {topic}")
@@ -43,9 +43,8 @@ def publish(client):
 def run():
     client = connect_mqtt()
     client.loop_start()
-    #print(hd.volPer())
     publish(client)
 
 
-if __name__ == '__main__':
-    run()
+#if __name__ == '__main__':
+    #run()

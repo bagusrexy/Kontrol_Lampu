@@ -21,7 +21,7 @@ for imPath in myList:
 print(len(overlayList))
 pTime = 0
 
-detector = htm.HandDetector(detectionCon=0.75)
+detector = htm.handDetector(detectionCon=0.75)
 
 tipIds = [4, 8, 12, 16, 20]
 
